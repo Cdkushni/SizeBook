@@ -12,6 +12,18 @@
 
     <ExpandableListView
         android:id="@+id/lvExp"
+        android:listSelector="#0f0"
+        android:childDivider="#0f0"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></ExpandableListView>
+        android:layout_height="wrap_content"></ExpandableListView>
+
+    <Button
+        android:id="@+id/addItem"
+        android:layout_alignBottom="@id/lvExp"
+        android:layout_alignRight="@id/lvExp"
+        android:text="+"
+        android:textSize="30dp"
+        android:onClick="onAddClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

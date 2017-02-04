@@ -21,11 +21,13 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listHashMap;
+    private String hdrTitleStr;
 
-    public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
+    public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap, String name) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listHashMap = listHashMap;
+        this.hdrTitleStr = name;
     }
 
     @Override
@@ -74,10 +76,7 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         TextView lblListHeader = (TextView)view.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
 
-        String hdrTitleStr = "SizeBook";
-        char[] headerTitle = hdrTitleStr.toCharArray();
-
-        lblListHeader.setText("SizeBook");
+        lblListHeader.setText(hdrTitleStr);
         return view;
     }
 
