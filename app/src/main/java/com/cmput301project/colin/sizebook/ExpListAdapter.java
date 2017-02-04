@@ -25,8 +25,8 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
 
     public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap, String name) {
         this.context = context;
-        this.listDataHeader = listDataHeader;
-        this.listHashMap = listHashMap;
+        this.listDataHeader = listDataHeader; // header data
+        this.listHashMap = listHashMap; // child data
         this.hdrTitleStr = name;
     }
 
@@ -42,7 +42,7 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int i) {
-        return listDataHeader.get(i);
+            return listDataHeader.get(i);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+    public View getGroupView(int i, boolean isExpanded, View view, ViewGroup parent) {
         String hdrTitle = (String)getGroup(i);
         if(view == null){
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -76,12 +76,12 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         TextView lblListHeader = (TextView)view.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
 
-        lblListHeader.setText(hdrTitleStr);
+        lblListHeader.setText(hdrTitle);
         return view;
     }
 
     @Override
-    public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
+    public View getChildView(int i, int i1, boolean isLastChild, View view, ViewGroup parent) {
         final String childText = (String)getChild(i,i1);
         if(view == null){
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

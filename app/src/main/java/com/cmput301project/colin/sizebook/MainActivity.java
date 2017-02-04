@@ -2,10 +2,15 @@ package com.cmput301project.colin.sizebook;
 
 import android.app.ExpandableListActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ExpandableListView.OnGroupCollapseListener;
+import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private ExpandableListView listView;
     private ExpandableListAdapter listAdapter;
     private List<String> listDataHeader;
-    private LinkedHashMap<String,List<String>> listHash;
+    private HashMap<String,List<String>> listHash;
     private ArrayList<NameInfo> deptList = new ArrayList<NameInfo>();
     private int currentItemIndex = 0;
     private String name = "default_Name";
@@ -47,44 +52,10 @@ public class MainActivity extends AppCompatActivity {
         currentItemIndex++;
     }
 
-    //here we maintain our products in various departments
-    private int addProduct(String department, String product){
-
-        int groupPosition = 0;
-
-        //check the hash map if the group already exists
-        NameInfo headerInfo = subjects.get(department);
-        //add the group if doesn't exists
-
-        if(headerInfo == null){
-            headerInfo = new NameInfo();
-            headerInfo.setName(department);
-            subjects.put(department, headerInfo);
-            deptList.add(headerInfo);
-        }
-
-        //get the children for the group
-        ArrayList<ChildInfo> productList = headerInfo.getProductList();
-        //size of the children list
-        int listSize = productList.size();
-        //add to the counter
-        listSize++;
-
-        //create a new child and add that to the group
-        ChildInfo detailInfo = new ChildInfo();
-        detailInfo.setSequence(String.valueOf(listSize));
-        detailInfo.setName(product);
-        productList.add(detailInfo);
-        headerInfo.setProductList(productList);
-
-        //find the group position inside the list
-        groupPosition = deptList.indexOf(headerInfo);
-        return groupPosition;
-    }
 
     private void initData(){
-        listDataHeader = new ArrayList<>();
-        listHash = new HashMap<>();
+        listDataHeader = new ArrayList<String>();
+        listHash = new HashMap<String, List<String>>();
 
         listDataHeader.add("EDMTDev");
         listDataHeader.add("Android");
