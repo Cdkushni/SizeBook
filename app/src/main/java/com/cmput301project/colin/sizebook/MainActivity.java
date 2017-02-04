@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private ExpandableListAdapter listAdapter;
     private List<String> listDataHeader;
     private HashMap<String,List<String>> listHash;
-    private ArrayList<NameInfo> deptList = new ArrayList<NameInfo>();
+    private List<customerRecord> custrecordsList;
     private int currentItemIndex = 0;
-    private String name = "default_Name";
+    private int currentRecordIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,57 +36,44 @@ public class MainActivity extends AppCompatActivity {
         // preparing list data
         initData();
 
-        listAdapter = new ExpListAdapter(this,listDataHeader,listHash,name);
+        listAdapter = new ExpListAdapter(this,listDataHeader,listHash);
         // setting list adapter
         listView.setAdapter(listAdapter);
     }
 
     public void onAddClick(View view) {
-        listDataHeader.add("NewData");
+        customerRecord newRecord = new customerRecord("Enter Name" + Integer.toString(currentItemIndex));
+        custrecordsList.add(newRecord);
+
+        listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
         List<String> NewData = new ArrayList<>();
-        NewData.add("This is an expandable ListView");
+        for (int i = 0; i < 8; i++){
+            NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
+        }
         listHash.put(listDataHeader.get(currentItemIndex), NewData);
-        listAdapter = new ExpListAdapter(this, listDataHeader,listHash,name);
+        listAdapter = new ExpListAdapter(this, listDataHeader,listHash);
         listView.setAdapter(listAdapter);
+        currentRecordIndex++;
         currentItemIndex++;
     }
 
 
     private void initData(){
+        custrecordsList = new ArrayList<customerRecord>();
         listDataHeader = new ArrayList<String>();
         listHash = new HashMap<String, List<String>>();
 
-        listDataHeader.add("EDMTDev");
-        listDataHeader.add("Android");
-        listDataHeader.add("Xamarin");
-        listDataHeader.add("UWP");
+        customerRecord newRecord = new customerRecord("Enter Name" + Integer.toString(currentItemIndex));
+        custrecordsList.add(newRecord);
 
-        List<String> edmtDev = new ArrayList<>();
-        edmtDev.add("This is an expandable ListView");
-
-        List<String> androidStudio = new ArrayList<>();
-        androidStudio.add("Expandable ListView");
-        androidStudio.add("Google Map");
-        androidStudio.add("Chat Application");
-        androidStudio.add("Firebase");
-
-        List<String> xamarin = new ArrayList<>();
-        xamarin.add("Xamarin Expandable ListView");
-        xamarin.add("Xamarin Google Map");
-        xamarin.add("Xamarin Chat Application");
-        xamarin.add("Xamarin Firebase");
-
-        List<String> uwp = new ArrayList<>();
-        uwp.add("UWP Expandable ListView");
-        uwp.add("UWP Google Map");
-        uwp.add("UWP Chat Application");
-        uwp.add("UWP Firebase");
-
-        listHash.put(listDataHeader.get(0), edmtDev);
-        listHash.put(listDataHeader.get(1), androidStudio);
-        listHash.put(listDataHeader.get(2), xamarin);
-        listHash.put(listDataHeader.get(3), uwp);
-        currentItemIndex = 4;
+        listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
+        List<String> NewData = new ArrayList<>();
+        for (int i = 0; i < 8; i++){
+            NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
+        }
+        listHash.put(listDataHeader.get(currentItemIndex), NewData);
+        currentItemIndex = 1;
+        currentRecordIndex++;
 
 
     }

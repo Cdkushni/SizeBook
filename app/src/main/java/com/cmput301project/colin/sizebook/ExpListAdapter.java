@@ -21,13 +21,11 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listHashMap;
-    private String hdrTitleStr;
 
-    public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap, String name) {
+    public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
         this.context = context;
         this.listDataHeader = listDataHeader; // header data
         this.listHashMap = listHashMap; // child data
-        this.hdrTitleStr = name;
     }
 
     @Override
