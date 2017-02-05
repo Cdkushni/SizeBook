@@ -1,6 +1,8 @@
 package com.cmput301project.colin.sizebook;
 
 import android.app.ExpandableListActivity;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> listDataHeader;
     private HashMap<String,List<String>> listHash;
     private List<customerRecord> custrecordsList;
+    private TextView input;
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
 
@@ -39,6 +43,42 @@ public class MainActivity extends AppCompatActivity {
         listAdapter = new ExpListAdapter(this,listDataHeader,listHash);
         // setting list adapter
         listView.setAdapter(listAdapter);
+        // Listview on child click listener
+        listView.setOnChildClickListener(new OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        final int groupPosition, final int childPosition, long id) {
+                //selected item
+                if(childPosition == 0){
+                    AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
+                    alert.setTitle("Customer Name");
+                    alert.setMessage("Enter a Name: ");
+                    alert.setView(input);
+                    alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Add",
+                            new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String value = input.getText().toString();
+
+                                    List<String> NewData = new ArrayList<>();
+                                    for (int i = 0; i < 8; i++){
+                                        NewData.add(custrecordsList.get(groupPosition).getRecord(i));
+                                    }
+                                    custrecordsList.get(groupPosition).setName(value);
+                                    listHash.put(listDataHeader.get(groupPosition), NewData);
+                                    listAdapter.notify();
+
+                                    dialog.dismiss();
+                                }
+                            });
+
+                    alert.show();
+                }
+                return false;
+            }
+        });
+
     }
 
     public void onAddClick(View view) {

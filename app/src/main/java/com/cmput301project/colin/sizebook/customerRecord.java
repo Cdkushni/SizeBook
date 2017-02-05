@@ -110,10 +110,7 @@ public class customerRecord {
         return name;
     }
 
-    public void setName(String name) throws NameTooLongException {
-        if(name.length() < 60){
-            throw new NameTooLongException();
-        }
+    public void setName(String name) {
         this.name = name;
     }
 
