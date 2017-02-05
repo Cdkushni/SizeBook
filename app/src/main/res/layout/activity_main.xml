@@ -14,16 +14,35 @@
         android:id="@+id/lvExp"
         android:listSelector="#0f0"
         android:childDivider="#0f0"
+        android:paddingBottom="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ExpandableListView>
-
     <Button
         android:id="@+id/addItem"
-        android:layout_alignBottom="@id/lvExp"
-        android:layout_alignRight="@id/lvExp"
+        android:layout_alignBottom="@+id/FrmLayout"
+        android:layout_alignRight="@+id/FrmLayout"
         android:text="+"
         android:textSize="30dp"
         android:onClick="onAddClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/itemCount"
+        android:text="1"
+        android:textColor="@android:color/black"
+        android:layout_alignBottom="@+id/FrmLayout"
+        android:layout_alignLeft="@+id/FrmLayout"
+        android:textSize="30dp"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:id="@+id/FrmLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+    </FrameLayout>
 </RelativeLayout>

@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String,List<String>> listHash;
     private List<customerRecord> custrecordsList;
     private EditText input;
+    private TextView counter;
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
 
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                             input.setRawInputType(Configuration.KEYBOARD_12KEY);
                         }
                     }
-
 
                     alert.setView(input);
                     alert.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
@@ -128,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
         listView.expandGroup(currentRecordIndex);
         currentRecordIndex++;
         currentItemIndex++;
+
+        counter = (TextView)findViewById(R.id.itemCount);
+        counter.setText(Integer.toString(currentRecordIndex));
     }
 
 
