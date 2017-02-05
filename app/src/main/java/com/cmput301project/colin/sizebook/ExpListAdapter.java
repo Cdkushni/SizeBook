@@ -40,7 +40,7 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int i) {
-            return listDataHeader.get(i);
+            return listHashMap.get(listDataHeader.get(i)).get(0);
     }
 
     @Override

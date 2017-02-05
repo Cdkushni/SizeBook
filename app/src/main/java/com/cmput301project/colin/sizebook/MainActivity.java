@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> listDataHeader;
     private HashMap<String,List<String>> listHash;
     private List<customerRecord> custrecordsList;
-    private TextView input;
+    private EditText input;
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
 
@@ -54,21 +55,30 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
                     alert.setTitle("Customer Name");
                     alert.setMessage("Enter a Name: ");
+                    input = new EditText(MainActivity.this);
                     alert.setView(input);
-                    alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Add",
+                    alert.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
                             new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     String value = input.getText().toString();
 
+                                    custrecordsList.get(groupPosition).setName(value);
                                     List<String> NewData = new ArrayList<>();
                                     for (int i = 0; i < 8; i++){
                                         NewData.add(custrecordsList.get(groupPosition).getRecord(i));
                                     }
-                                    custrecordsList.get(groupPosition).setName(value);
-                                    listHash.put(listDataHeader.get(groupPosition), NewData);
-                                    listAdapter.notify();
 
+                                    listHash.put(listDataHeader.get(groupPosition), NewData);
+                                    listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+                                    listView.setAdapter(listAdapter);
+                                    dialog.dismiss();
+                                }
+                            });
+                    alert.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+                            new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
                             });
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddClick(View view) {
-        customerRecord newRecord = new customerRecord("Enter Name" + Integer.toString(currentItemIndex));
+        customerRecord newRecord = new customerRecord("Enter Name");
         custrecordsList.add(newRecord);
 
         listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
@@ -103,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         listDataHeader = new ArrayList<String>();
         listHash = new HashMap<String, List<String>>();
 
-        customerRecord newRecord = new customerRecord("Enter Name" + Integer.toString(currentItemIndex));
+        customerRecord newRecord = new customerRecord("Enter Name");
         custrecordsList.add(newRecord);
 
         listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
