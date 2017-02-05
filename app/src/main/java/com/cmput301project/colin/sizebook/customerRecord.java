@@ -8,36 +8,65 @@ import java.util.Date;
 public class customerRecord {
     private Date date;
     private String name;
-    private int neckInches;
-    private int bustInches;
-    private int chestInches;
-    private int waistInches;
-    private int hipInches;
-    private int inseamInches;
+    private String neckInches;
+    private String bustInches;
+    private String chestInches;
+    private String waistInches;
+    private String hipInches;
+    private String inseamInches;
     private String comment;
 
     public customerRecord(String name){
         this.name = name;
         this.date = new Date();
-        this.neckInches = -1;
-        this.bustInches = -1;
-        this.chestInches = -1;
-        this.waistInches = -1;
-        this.hipInches = -1;
-        this.inseamInches = -1;
+        this.neckInches = "N/A";
+        this.bustInches = "N/A";
+        this.chestInches = "N/A";
+        this.waistInches = "N/A";
+        this.hipInches = "N/A";
+        this.inseamInches = "N/A";
         this.comment = "Enter Comment";
     }
 
     public customerRecord(Date date, String name){
         this.name = name;
         this.date = date;
-        this.neckInches = -1;
-        this.bustInches = -1;
-        this.chestInches = -1;
-        this.waistInches = -1;
-        this.hipInches = -1;
-        this.inseamInches = -1;
+        this.neckInches = "N/A";
+        this.bustInches = "N/A";
+        this.chestInches = "N/A";
+        this.waistInches = "N/A";
+        this.hipInches = "N/A";
+        this.inseamInches = "N/A";
         this.comment = "Enter Comment";
+    }
+    public void setRecord(int dataIndex, String newValue){
+        if(dataIndex == 0){
+            this.setName(newValue);
+        }
+        else if(dataIndex == 1){
+            this.setDate(new Date());
+        }
+        else if(dataIndex == 2){
+            this.setNeckInches(newValue);
+        }
+        else if(dataIndex == 3){
+            this.setBustInches(newValue);
+        }
+        else if(dataIndex == 4){
+            this.setChestInches(newValue);
+        }
+        else if(dataIndex == 5){
+            this.setWaistInches(newValue);
+        }
+        else if(dataIndex == 6){
+            this.setHipInches(newValue);
+        }
+        else if(dataIndex == 7){
+            this.setInseamInches(newValue);
+        }
+        else if(dataIndex == 8){
+            this.setComment(newValue);
+        }
     }
 
     public String getRecord(int dataIndex){
@@ -48,48 +77,48 @@ public class customerRecord {
             return "Date Entered " + this.getDate().toString();
         }
         else if(dataIndex == 2){
-            if (this.getNeckInches() == -1){
+            if (this.getNeckInches() == "N/A"){
                 return "Please Enter Neck Measurement";
             }else{
                 return "Neck: " + this.getNeckInches();
             }
         }
         else if(dataIndex == 3){
-            if (this.getBustInches() == -1){
+            if (this.getBustInches() == "N/A"){
                 return "Please Enter Bust Measurement";
             }else{
                 return "Bust: " + this.getBustInches();
             }
         }
-        else if(dataIndex == 3){
-            if (this.getChestInches() == -1){
+        else if(dataIndex == 4){
+            if (this.getChestInches() == "N/A"){
                 return "Please Enter Chest Measurement";
             }else{
                 return "Chest: " + this.getChestInches();
             }
         }
-        else if(dataIndex == 4){
-            if (this.getWaistInches() == -1){
+        else if(dataIndex == 5){
+            if (this.getWaistInches() == "N/A"){
                 return "Please Enter Waist Measurement";
             }else{
                 return "Waist: " + this.getWaistInches();
             }
         }
-        else if(dataIndex == 5){
-            if (this.getHipInches() == -1){
+        else if(dataIndex == 6){
+            if (this.getHipInches() == "N/A"){
                 return "Please Enter Hip Measurement";
             }else{
                 return "Hip: " + this.getHipInches();
             }
         }
-        else if(dataIndex == 6){
-            if (this.getInseamInches() == -1){
+        else if(dataIndex == 7){
+            if (this.getInseamInches() == "N/A"){
                 return "Please Enter Inseam Measurement";
             }else{
                 return "Inseam: " + this.getInseamInches();
             }
         }
-        else if(dataIndex == 7){
+        else if(dataIndex == 8){
             return this.getComment();
         }
         else{
@@ -114,51 +143,51 @@ public class customerRecord {
         this.name = name;
     }
 
-    public int getNeckInches() {
+    public String getNeckInches() {
         return neckInches;
     }
 
-    public void setNeckInches(int neckInches) {
+    public void setNeckInches(String neckInches) {
         this.neckInches = neckInches;
     }
 
-    public int getBustInches() {
+    public String getBustInches() {
         return bustInches;
     }
 
-    public void setBustInches(int bustInches) {
+    public void setBustInches(String bustInches) {
         this.bustInches = bustInches;
     }
 
-    public int getChestInches() {
+    public String getChestInches() {
         return chestInches;
     }
 
-    public void setChestInches(int chestInches) {
+    public void setChestInches(String chestInches) {
         this.chestInches = chestInches;
     }
 
-    public int getWaistInches() {
+    public String getWaistInches() {
         return waistInches;
     }
 
-    public void setWaistInches(int waistInches) {
+    public void setWaistInches(String waistInches) {
         this.waistInches = waistInches;
     }
 
-    public int getHipInches() {
+    public String getHipInches() {
         return hipInches;
     }
 
-    public void setHipInches(int hipInches) {
+    public void setHipInches(String hipInches) {
         this.hipInches = hipInches;
     }
 
-    public int getInseamInches() {
+    public String getInseamInches() {
         return inseamInches;
     }
 
-    public void setInseamInches(int inseamInches) {
+    public void setInseamInches(String inseamInches) {
         this.inseamInches = inseamInches;
     }
 

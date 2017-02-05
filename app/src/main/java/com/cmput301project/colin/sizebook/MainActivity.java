@@ -51,10 +51,16 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         final int groupPosition, final int childPosition, long id) {
                 //selected item
-                if(childPosition == 0){
+                if (childPosition != 1){
                     AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
-                    alert.setTitle("Customer Name");
-                    alert.setMessage("Enter a Name: ");
+                    if (childPosition == 0){
+                        alert.setTitle("Customer Name");
+                        alert.setMessage("Enter a Name: ");
+                    }else{
+                        alert.setTitle(custrecordsList.get(groupPosition).getRecord(childPosition));
+                        alert.setMessage("Enter a Measurement(inches): ");
+                    }
+
                     input = new EditText(MainActivity.this);
                     alert.setView(input);
                     alert.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
@@ -63,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String value = input.getText().toString();
 
-                                    custrecordsList.get(groupPosition).setName(value);
+                                    custrecordsList.get(groupPosition).setRecord(childPosition, value);
                                     List<String> NewData = new ArrayList<>();
                                     for (int i = 0; i < 8; i++){
                                         NewData.add(custrecordsList.get(groupPosition).getRecord(i));
@@ -73,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                                     listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
                                     listView.setAdapter(listAdapter);
                                     dialog.dismiss();
+                                    listView.expandGroup(groupPosition,true);
                                 }
                             });
                     alert.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
