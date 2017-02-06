@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (dayOfMonth < mDay && year == mYear && monthOfYear == mMonth)
                                             view.updateDate(mYear,mMonth,mDay);
 
-                                        String value = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                        String value = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
                                         custrecordsList.get(groupPosition).setRecord(childPosition, value);
                                         List<String> NewData = new ArrayList<>();
                                         for (int i = 0; i < 9; i++) {
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                                         listHash.put(listDataHeader.get(groupPosition), NewData);
                                         listAdapter.notifyDataSetChanged();
                                         listAdapter.notifyDataSetInvalidated();
+                                        saveInFile();
                                         listView.expandGroup(groupPosition, true);
 
                                     }
@@ -175,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                                     listHash.put(listDataHeader.get(groupPosition), NewData);
                                     listAdapter.notifyDataSetChanged();
                                     listAdapter.notifyDataSetInvalidated();
+                                    saveInFile();
                                     dialog.dismiss();
                                     listView.expandGroup(groupPosition, true);
                                 }
@@ -189,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
                     alert.show();
                 }
-                saveInFile();
                 return false;
             }
         });
@@ -235,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
                             listAdapter.notifyDataSetChanged();
                             listAdapter.notifyDataSetInvalidated();
+                            saveInFile();
 
                             dialogInterface.dismiss();
                         }
@@ -247,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             deleteAlert.show();
-            saveInFile();
         }else{
             final AlertDialog badDeleteAlert = new AlertDialog.Builder(MainActivity.this).create();
             badDeleteAlert.setTitle("No Entry Selected");
@@ -312,17 +313,6 @@ public class MainActivity extends AppCompatActivity {
             counter.setText(Integer.toString(currentRecordIndex));
         }
         saveInFile();
-    }
-
-
-    private void initData(){
-        custrecordsList = new ArrayList<customerRecord>();
-        listDataHeader = new ArrayList<String>();
-        listHash = new HashMap<String, List<String>>();
-        listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
-        listView.setAdapter(listAdapter);
-        counter = (TextView) findViewById(R.id.itemCount);
-        counter.setText(Integer.toString(currentRecordIndex));
     }
 
     /**

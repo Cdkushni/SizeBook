@@ -15,7 +15,7 @@
         android:listSelector="#0f0"
         android:childDivider="#0f0"
         android:padding="30dp"
-        android:paddingBottom="30dp"
+        android:paddingBottom="60dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ExpandableListView>
     <Button
@@ -23,14 +23,14 @@
         android:layout_alignBottom="@+id/FrmLayout"
         android:layout_alignRight="@+id/FrmLayout"
         android:text="+"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:onClick="onAddClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:text="Number of Entries: "
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:textColor="@android:color/black"
         android:layout_alignTop="@id/FrmLayout"
         android:layout_alignLeft="@id/FrmLayout"
@@ -42,15 +42,15 @@
         android:textColor="@android:color/black"
         android:layout_alignTop="@+id/FrmLayout"
         android:layout_alignRight="@+id/FrmLayout"
-        android:textSize="30dp"
-        android:layout_width="45dp"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/deleteItem"
         android:layout_alignBottom="@+id/FrmLayout"
         android:layout_alignLeft="@+id/FrmLayout"
         android:text="Delete"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:onClick="onDeleteClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
