@@ -22,6 +22,32 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listHashMap;
 
+    public List<customerRecord> getCurrentRecord() {
+        return currentRecord;
+    }
+
+    public void setCurrentRecord(List<customerRecord> currentRecord) {
+        this.currentRecord = currentRecord;
+    }
+
+    public List<String> getListDataHeader() {
+        return listDataHeader;
+    }
+
+    public void setListDataHeader(List<String> listDataHeader) {
+        this.listDataHeader = listDataHeader;
+    }
+
+    public HashMap<String, List<String>> getListHashMap() {
+        return listHashMap;
+    }
+
+    public void setListHashMap(HashMap<String, List<String>> listHashMap) {
+        this.listHashMap = listHashMap;
+    }
+
+    private List<customerRecord> currentRecord;
+
     public ExpListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
         this.context = context;
         this.listDataHeader = listDataHeader; // header data
@@ -89,6 +115,17 @@ public class ExpListAdapter extends BaseExpandableListAdapter {
         TextView txtListChild = (TextView)view.findViewById(R.id.lblListItem);
         txtListChild.setText(childText);
         return view;
+    }
+    public void removeGroup(int group) {
+        //remove children of group
+
+        for (int g = 0; g < 9; g++) {
+            listHashMap.remove(listHashMap.get(listDataHeader.get(group)).get(g));
+        }
+        // remove group
+        listHashMap.remove(listDataHeader.get(group));
+        listDataHeader.remove(group);
+        notifyDataSetChanged();
     }
 
     @Override

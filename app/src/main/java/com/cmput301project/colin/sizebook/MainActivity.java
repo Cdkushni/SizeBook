@@ -1,40 +1,52 @@
 package com.cmput301project.colin.sizebook;
 
-import android.app.ExpandableListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.app.Activity;
-import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String FILENAME = "SzBkFile.sav";
     private ExpandableListView listView;
     private ExpListAdapter listAdapter;
     private List<String> listDataHeader;
+    private List<String> tempDataHeader;
     private HashMap<String,List<String>> listHash;
+    private HashMap<String,List<String>> tempHash;
     private List<customerRecord> custrecordsList;
+    private List<customerRecord> tempCustRecords;
     private EditText input;
     private TextView counter;
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
+    private int currentGroupSelection = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +55,20 @@ public class MainActivity extends AppCompatActivity {
         // get list view
         listView = (ExpandableListView)findViewById(R.id.lvExp);
         // preparing list data
-        initData();
+        loadFromFile();
+        //initData();
 
-        listAdapter = new ExpListAdapter(this,listDataHeader,listHash);
+        //listAdapter = new ExpListAdapter(this,listDataHeader,listHash, custrecordsList);
         // setting list adapter
-        listView.setAdapter(listAdapter);
+        //listView.setAdapter(listAdapter);
+        // Listview on group click listener
+        listView.setOnGroupClickListener(new OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, final int groupPosition, long l) {
+                currentGroupSelection = groupPosition;
+                return false;
+            }
+        });
         // Listview on child click listener
         listView.setOnChildClickListener(new OnChildClickListener() {
 
@@ -66,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         alert.setMessage("Enter a Measurement(inches): ");
                         input = new EditText(MainActivity.this);
                         if(childPosition != 8) {
-                            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                            input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                             input.setRawInputType(Configuration.KEYBOARD_12KEY);
                         }
                     }
@@ -77,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     String value = input.getText().toString();
+
+                                    if (childPosition > 1 && childPosition < 8){
+                                        //Decimal formatting found: http://stackoverflow.com/questions/12027900/java-double-input///
+                                        BigDecimal convertDec;
+                                        DecimalFormat dFormat = new DecimalFormat("#.0");
+                                        convertDec = new BigDecimal(value);
+                                        value = dFormat.format(convertDec.doubleValue());
+                                    }
 
                                     custrecordsList.get(groupPosition).setRecord(childPosition, value);
                                     List<String> NewData = new ArrayList<>();
@@ -108,29 +137,122 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    public void onDeleteClick(View view) {
+        if (currentGroupSelection > -1) {
+            AlertDialog deleteAlert = new AlertDialog.Builder(MainActivity.this).create();
+            deleteAlert.setTitle("Are you sure you wish to delete this entry?");
+            deleteAlert.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // recreate list with current record index
+                            tempCustRecords = new ArrayList<customerRecord>();
+                            tempDataHeader = new ArrayList<String>();
+                            tempHash = new HashMap<String, List<String>>();
+
+                            for (int c = 0; c < currentRecordIndex; c++) {
+                                if (c != currentGroupSelection) {
+                                    tempCustRecords.add(custrecordsList.get(c));
+                                    tempDataHeader.add(listDataHeader.get(c));
+                                    List<String> NewData = new ArrayList<>();
+                                    for (int g = 0; g < 9; g++) {
+                                        NewData.add(custrecordsList.get(c).getRecord(g));
+                                    }
+                                    tempHash.put(listDataHeader.get(c), listHash.get(listDataHeader.get(c)));
+                                }
+                            }
+                            custrecordsList = tempCustRecords;
+                            listDataHeader = tempDataHeader;
+                            listHash = tempHash;
+
+                            currentItemIndex--;
+                            currentRecordIndex--;
+                            currentGroupSelection = -1;
+
+                            listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+                            listView.setAdapter(listAdapter);
+
+                            counter = (TextView) findViewById(R.id.itemCount);
+                            counter.setText(Integer.toString(currentRecordIndex));
+
+                            listAdapter.notifyDataSetChanged();
+                            listAdapter.notifyDataSetInvalidated();
+
+                            dialogInterface.dismiss();
+                        }
+                    });
+            deleteAlert.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+            deleteAlert.show();
+        }else{
+            final AlertDialog badDeleteAlert = new AlertDialog.Builder(MainActivity.this).create();
+            badDeleteAlert.setTitle("No Entry Selected");
+            badDeleteAlert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            badDeleteAlert.dismiss();
+                        }
+                    });
+            badDeleteAlert.show();
+        }
+    }
 
     public void onAddClick(View view) {
-        customerRecord newRecord = new customerRecord("New Entry " + Integer.toString(currentRecordIndex));
-        custrecordsList.add(newRecord);
+        if (currentRecordIndex > 0) {
+            customerRecord newRecord = new customerRecord("New Entry " + Integer.toString(currentRecordIndex));
+            custrecordsList.add(newRecord);
 
-        listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
-        List<String> NewData = new ArrayList<>();
-        for (int i = 0; i < 9; i++){
-            NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
+            listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
+            List<String> NewData = new ArrayList<>();
+            for (int i = 0; i < 9; i++) {
+                NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
+            }
+
+            listHash.put(listDataHeader.get(currentItemIndex), NewData);
+            listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetInvalidated();
+            for (int g = 0; g < currentRecordIndex; g++) {
+                listView.collapseGroup(g);
+            }
+            listView.expandGroup(currentRecordIndex);
+            currentRecordIndex++;
+            currentItemIndex++;
+
+            counter = (TextView) findViewById(R.id.itemCount);
+            counter.setText(Integer.toString(currentRecordIndex));
+        }else{
+            custrecordsList = new ArrayList<customerRecord>();
+            listDataHeader = new ArrayList<String>();
+            listHash = new HashMap<String, List<String>>();
+
+            customerRecord newRecord = new customerRecord("New Entry");
+            custrecordsList.add(newRecord);
+
+            listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
+            List<String> NewData = new ArrayList<>();
+            for (int i = 0; i < 9; i++){
+                NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
+            }
+            listHash.put(listDataHeader.get(currentItemIndex), NewData);
+            currentItemIndex++;
+            currentRecordIndex++;
+
+            listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+            listView.setAdapter(listAdapter);
+
+            listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetInvalidated();
+
+            counter = (TextView) findViewById(R.id.itemCount);
+            counter.setText(Integer.toString(currentRecordIndex));
         }
-
-        listHash.put(listDataHeader.get(currentItemIndex), NewData);
-        listAdapter.notifyDataSetChanged();
-        listAdapter.notifyDataSetInvalidated();
-        for(int g = 0; g < currentRecordIndex; g++){
-            listView.collapseGroup(g);
-        }
-        listView.expandGroup(currentRecordIndex);
-        currentRecordIndex++;
-        currentItemIndex++;
-
-        counter = (TextView)findViewById(R.id.itemCount);
-        counter.setText(Integer.toString(currentRecordIndex));
+        saveInFile();
     }
 
 
@@ -138,19 +260,87 @@ public class MainActivity extends AppCompatActivity {
         custrecordsList = new ArrayList<customerRecord>();
         listDataHeader = new ArrayList<String>();
         listHash = new HashMap<String, List<String>>();
-
-        customerRecord newRecord = new customerRecord("Enter Name");
-        custrecordsList.add(newRecord);
-
-        listDataHeader.add(custrecordsList.get(currentRecordIndex).getName());
-        List<String> NewData = new ArrayList<>();
-        for (int i = 0; i < 9; i++){
-            NewData.add(custrecordsList.get(currentRecordIndex).getRecord(i));
-        }
-        listHash.put(listDataHeader.get(currentItemIndex), NewData);
-        currentItemIndex = 1;
-        currentRecordIndex++;
-
-
+        listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+        listView.setAdapter(listAdapter);
+        counter = (TextView) findViewById(R.id.itemCount);
+        counter.setText(Integer.toString(currentRecordIndex));
     }
+
+    /**
+     * Loads Entries from file.
+     * @exception FileNotFoundException if the file is not created
+     */
+    private void loadFromFile() {
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+
+            Gson gson = new Gson();
+
+            // Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
+            // 2017-01-26 17:53:59
+            // read in listadapter and read items out of it for init
+            listHash = gson.fromJson(in, new TypeToken<HashMap<String, List<String>>>(){}.getType());
+
+            fis.close();
+
+            custrecordsList = new ArrayList<customerRecord>();
+            for (List<String> value : listHash.values()){
+                customerRecord tempRecord = new customerRecord(value.get(0));
+                for (int v = 1; v < 9; v++){
+                    tempRecord.setRecord(v, value.get(v));
+                }
+                custrecordsList.add(tempRecord);
+            }
+            listDataHeader = new ArrayList<String>();
+            for (String key : listHash.keySet()){
+                listDataHeader.add(key);
+            }
+            currentRecordIndex = listHash.size();
+            currentItemIndex = listHash.size();
+            listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+            listView.setAdapter(listAdapter);
+            counter = (TextView) findViewById(R.id.itemCount);
+            counter.setText(Integer.toString(currentRecordIndex));
+
+        } catch (FileNotFoundException e) {
+            custrecordsList = new ArrayList<customerRecord>();
+            listDataHeader = new ArrayList<String>();
+            listHash = new HashMap<String, List<String>>();
+            listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
+            listView.setAdapter(listAdapter);
+            counter = (TextView) findViewById(R.id.itemCount);
+            counter.setText(Integer.toString(currentRecordIndex));
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    /**
+     * Saves Entries in file in JSON format.
+     * @throws FileNotFoundException if folder does not exist
+     */
+    private void saveInFile() {
+        try {
+            // save ExpListAdapter so we can read all data back out of it when we load
+            FileOutputStream fos = openFileOutput(FILENAME,
+                    Context.MODE_PRIVATE);
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter((fos)));
+
+            Gson gson = new Gson();
+
+            gson.toJson(listHash, out);// died here
+
+            // can load listDataHeader items from listHash's keys
+            // can get currentRecordIndex from size of listHash
+            out.flush();
+
+            fos.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
 }
