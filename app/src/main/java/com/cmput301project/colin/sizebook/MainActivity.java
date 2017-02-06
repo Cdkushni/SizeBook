@@ -1,5 +1,6 @@
 package com.cmput301project.colin.sizebook;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -8,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -27,9 +29,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
     private int currentGroupSelection = -1;
+    private int mYear, mMonth, mDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +82,64 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         final int groupPosition, final int childPosition, long id) {
                 //selected item
-                if (childPosition != 1){
                     AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
                     if (childPosition == 0){
                         alert.setTitle("Customer Name");
                         alert.setMessage("Enter a Name: ");
                         input = new EditText(MainActivity.this);
+                    }else if(childPosition == 1){
+                        // Date Field code taken from http://stackoverflow.com/questions/39051210/how-to-give-input-date-field-for-registration-form-in-android
+                        final Calendar myCalendar = Calendar.getInstance();
+                        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int day) {
+                                myCalendar.set(Calendar.YEAR, year);
+                                myCalendar.set(Calendar.MONTH, month);
+                                myCalendar.set(Calendar.DAY_OF_MONTH, day);
+                                String myFormat = "yyyy-MM-dd";
+                                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                                String value1 = sdf.format(myCalendar.getTime());
+                            }
+                        };
+                        final Calendar c = Calendar.getInstance();
+                        mYear = c.get(Calendar.YEAR);
+                        mMonth = c.get(Calendar.MONTH);
+                        mDay = c.get(Calendar.DAY_OF_MONTH);
+                        // Launch Date Picker Dialog
+                        DatePickerDialog dpd = new DatePickerDialog(MainActivity.this,
+                                new DatePickerDialog.OnDateSetListener() {
+
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year,
+                                                          int monthOfYear, int dayOfMonth) {
+                                        // Display Selected date in textbox
+
+                                        if (year < mYear)
+                                            view.updateDate(mYear,mMonth,mDay);
+
+                                        if (monthOfYear < mMonth && year == mYear)
+                                            view.updateDate(mYear,mMonth,mDay);
+
+                                        if (dayOfMonth < mDay && year == mYear && monthOfYear == mMonth)
+                                            view.updateDate(mYear,mMonth,mDay);
+
+                                        String value = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                        custrecordsList.get(groupPosition).setRecord(childPosition, value);
+                                        List<String> NewData = new ArrayList<>();
+                                        for (int i = 0; i < 9; i++) {
+                                            NewData.add(custrecordsList.get(groupPosition).getRecord(i));
+                                        }
+
+                                        listHash.put(listDataHeader.get(groupPosition), NewData);
+                                        listAdapter.notifyDataSetChanged();
+                                        listAdapter.notifyDataSetInvalidated();
+                                        listView.expandGroup(groupPosition, true);
+
+                                    }
+                                }, mYear, mMonth, mDay);
+                        dpd.getDatePicker().setMinDate(System.currentTimeMillis());
+                        dpd.show();
+
                     }else{
                         alert.setTitle(custrecordsList.get(groupPosition).getRecord(childPosition));
                         alert.setMessage("Enter a Measurement(inches): ");
@@ -92,14 +150,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
+                if (childPosition != 1) {
                     alert.setView(input);
                     alert.setButton(AlertDialog.BUTTON_POSITIVE, "Add",
-                            new DialogInterface.OnClickListener(){
+                            new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     String value = input.getText().toString();
 
-                                    if (childPosition > 1 && childPosition < 8){
+                                    if (childPosition > 1 && childPosition < 8) {
                                         //Decimal formatting found: http://stackoverflow.com/questions/12027900/java-double-input///
                                         BigDecimal convertDec;
                                         DecimalFormat dFormat = new DecimalFormat("#.0");
@@ -109,21 +168,19 @@ public class MainActivity extends AppCompatActivity {
 
                                     custrecordsList.get(groupPosition).setRecord(childPosition, value);
                                     List<String> NewData = new ArrayList<>();
-                                    for (int i = 0; i < 9; i++){
+                                    for (int i = 0; i < 9; i++) {
                                         NewData.add(custrecordsList.get(groupPosition).getRecord(i));
                                     }
 
                                     listHash.put(listDataHeader.get(groupPosition), NewData);
-                                    //listAdapter = new ExpListAdapter(MainActivity.this, listDataHeader, listHash);
-                                    //listView.setAdapter(listAdapter);
                                     listAdapter.notifyDataSetChanged();
                                     listAdapter.notifyDataSetInvalidated();
                                     dialog.dismiss();
-                                    listView.expandGroup(groupPosition,true);
+                                    listView.expandGroup(groupPosition, true);
                                 }
                             });
                     alert.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-                            new DialogInterface.OnClickListener(){
+                            new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -132,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
                     alert.show();
                 }
+                saveInFile();
                 return false;
             }
         });
@@ -189,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             deleteAlert.show();
+            saveInFile();
         }else{
             final AlertDialog badDeleteAlert = new AlertDialog.Builder(MainActivity.this).create();
             badDeleteAlert.setTitle("No Entry Selected");

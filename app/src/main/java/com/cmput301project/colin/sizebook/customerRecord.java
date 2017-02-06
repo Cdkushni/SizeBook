@@ -6,7 +6,7 @@ import java.util.Date;
  */
 
 public class customerRecord {
-    private Date date;
+    private String date;
     private String name;
     private String neckInches;
     private String bustInches;
@@ -18,7 +18,7 @@ public class customerRecord {
 
     public customerRecord(String name){
         this.name = name;
-        this.date = new Date();
+        this.date = new Date().toString();
         this.neckInches = "N/A";
         this.bustInches = "N/A";
         this.chestInches = "N/A";
@@ -30,7 +30,7 @@ public class customerRecord {
 
     public customerRecord(Date date, String name){
         this.name = name;
-        this.date = date;
+        this.date = date.toString();
         this.neckInches = "N/A";
         this.bustInches = "N/A";
         this.chestInches = "N/A";
@@ -44,7 +44,7 @@ public class customerRecord {
             this.setName(newValue);
         }
         else if(dataIndex == 1){
-            this.setDate(new Date());
+            this.setDate(newValue);
         }
         else if(dataIndex == 2){
             this.setNeckInches(newValue);
@@ -127,11 +127,11 @@ public class customerRecord {
 
     }
 
-    public Date getDate(){
+    public String getDate(){
         return date;
     }
 
-    public void setDate(Date date){
+    public void setDate(String date){
         this.date = date;
     }
 
