@@ -36,9 +36,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This class is the main activity of the project where all the views are handled.
+ * User interactions are caught here with click listeners and dialogs are used for input
+ * Buttons are also referenced here for deletion and addition of record entries
+ * Saved data for the entries are saved in the for of "json" files that are stored in the
+ * Emulator accessible from Android Device Monitor
+ *
+ * @author Colin Kushniruk
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * The file that the entries are saved in.
+     * In JSON format.
+     * @see #loadFromFile()
+     * @see #saveInFile()
+     */
     private static final String FILENAME = "SzBkFile.sav";
+
+    /**
+     * These are the datasets used for managing data stored in all of the entries
+     */
     private ExpandableListView listView;
     private ExpListAdapter listAdapter;
     private List<String> listDataHeader;
@@ -47,13 +69,43 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String,List<String>> tempHash;
     private List<customerRecord> custrecordsList;
     private List<customerRecord> tempCustRecords;
+
+    /**
+     * This is the input used for dialog data input
+     */
     private EditText input;
+
+    /**
+     * This is the counter that is used to display the number of entries currently in existance
+     */
     private TextView counter;
+
+    /**
+     * These integers are used for various counting trackers
+     */
     private int currentItemIndex = 0;
     private int currentRecordIndex = 0;
     private int currentGroupSelection = -1;
+
+    /**
+     * These integers are used for the date picker
+     */
     private int mYear, mMonth, mDay;
 
+    /**
+     * Called when the activity first starts
+     * Holds the onclick events for all of the expandable list adapter's children
+     * When a child is clicked, it will check what index that child is.
+     *
+     * <ul>
+     *     <li>Index 0: Name - will use a standard EditText with no key restrictions</li>
+     *     <li>Index 1: Date - will use a Date dialog to allow date entry in 'yyyy-MM-dd' form</li>
+     *     <li>Index 2 - 7: Measurements(Inches) - will use a numeric input and convert to one decimal place</li>
+     *     <li>Index 8: Comment - will use a standard EditText with no key restrictions</li>
+     * </ul>
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +139,13 @@ public class MainActivity extends AppCompatActivity {
                         alert.setTitle("Customer Name");
                         alert.setMessage("Enter a Name: ");
                         input = new EditText(MainActivity.this);
-                    }else if(childPosition == 1){
+                    }else if(childPosition == 8){
+                        alert.setTitle(custrecordsList.get(groupPosition).getRecord(childPosition));
+                        alert.setMessage("Enter a Comment: ");
+                        input = new EditText(MainActivity.this);
+                    }
+
+                    else if(childPosition == 1){
                         // Date Field code taken from http://stackoverflow.com/questions/39051210/how-to-give-input-date-field-for-registration-form-in-android
                         final Calendar myCalendar = Calendar.getInstance();
                         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -196,6 +254,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+    /**
+     * Called when the delete button is clicked.
+     * If there is no entry selected when this function is called
+     * a dialog box will show up that will tell the user to select an entry first.
+     * If there is a entry selected, this function will remove that entry and update the adapter
+     * Also decrements the entry counter to keep track.
+     * @param view
+     */
     public void onDeleteClick(View view) {
         if (currentGroupSelection > -1) {
             AlertDialog deleteAlert = new AlertDialog.Builder(MainActivity.this).create();
@@ -263,6 +331,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the add button is clicked.
+     * If there are currently no entries in the view, then this function will do an initiation of
+     * the lists used to store all the data used for holding entry data.
+     * If there are currently entries in the view, then the function can just add a new set of data
+     * to the lists holding the entry data.
+     * Also increments the entry counter to keep track
+     * @param view
+     */
     public void onAddClick(View view) {
         if (currentRecordIndex > 0) {
             customerRecord newRecord = new customerRecord("New Entry " + Integer.toString(currentRecordIndex));
@@ -316,7 +393,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Loads Entries from file.
+     * Loads Entries from file in the form of the listHash that was stored.
+     * Uses the listHash's keys to repopulate the listDataHeader string array
+     * Uses the listHash's values to repopulate the custrecordsList with all the customerRecord
+     * objects.
+     * Uses the size of the list hash to reinitiate the currentRecordIndex and currentItemIndex
+     * Uses the size of the listhash to reinitiate the entry counter
      * @exception FileNotFoundException if the file is not created
      */
     private void loadFromFile() {
@@ -328,7 +410,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
             // 2017-01-26 17:53:59
-            // read in listadapter and read items out of it for init
+            // read in listHash and read items out of it for init
             listHash = gson.fromJson(in, new TypeToken<HashMap<String, List<String>>>(){}.getType());
 
             fis.close();
@@ -366,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Saves Entries in file in JSON format.
+     * Saves Entries through the HashMap object in file in JSON format.
      * @throws FileNotFoundException if folder does not exist
      */
     private void saveInFile() {

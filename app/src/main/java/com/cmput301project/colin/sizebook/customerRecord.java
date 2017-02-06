@@ -2,10 +2,14 @@ package com.cmput301project.colin.sizebook;
 
 import java.util.Date;
 /**
+ * This class represents a customer record entry storing all of the data needed to
+ * populate a expandable list entry quickly with inbuilt functions
  * Created by Colin on 2/4/2017.
  */
-
 public class customerRecord {
+    /**
+     * all of the data needed for a customer entry is stored here as strings for easy access
+     */
     private String date;
     private String name;
     private String neckInches;
@@ -16,6 +20,12 @@ public class customerRecord {
     private String inseamInches;
     private String comment;
 
+    /**
+     * instantiation of a new entry with a name passed in by default, everything else has various
+     * default values.
+     * Date is by default initiated with current time and date
+     * @param name
+     */
     public customerRecord(String name){
         this.name = name;
         this.date = new Date().toString();
@@ -28,17 +38,13 @@ public class customerRecord {
         this.comment = "Enter Comment";
     }
 
-    public customerRecord(Date date, String name){
-        this.name = name;
-        this.date = date.toString();
-        this.neckInches = "N/A";
-        this.bustInches = "N/A";
-        this.chestInches = "N/A";
-        this.waistInches = "N/A";
-        this.hipInches = "N/A";
-        this.inseamInches = "N/A";
-        this.comment = "Enter Comment";
-    }
+    /**
+     * setRecord function that will set the recieved arguments to their proper fields
+     * based upon the data index.
+     * For easy setup of new records without conditionals in the main activity
+     * @param dataIndex
+     * @param newValue
+     */
     public void setRecord(int dataIndex, String newValue){
         if(dataIndex == 0){
             this.setName(newValue);
@@ -69,6 +75,12 @@ public class customerRecord {
         }
     }
 
+    /**
+     * Easy getter of records by just passing in the dataIndex, perfect for interators
+     * for easily passing customer data along to textviews
+     * @param dataIndex
+     * @return
+     */
     public String getRecord(int dataIndex){
         if(dataIndex == 0){
             return this.getName();
@@ -127,6 +139,10 @@ public class customerRecord {
 
     }
 
+    /**
+     * the rest of these are generic getters and setters for all of the classes values
+     * @return
+     */
     public String getDate(){
         return date;
     }
