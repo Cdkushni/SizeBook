@@ -156,10 +156,12 @@ public class MainActivity extends AppCompatActivity {
                                 myCalendar.set(Calendar.DAY_OF_MONTH, day);
                                 String myFormat = "yyyy-MM-dd";
                                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
                                 String value1 = sdf.format(myCalendar.getTime());
                             }
                         };
                         final Calendar c = Calendar.getInstance();
+
                         mYear = c.get(Calendar.YEAR);
                         mMonth = c.get(Calendar.MONTH);
                         mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -171,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                                     public void onDateSet(DatePicker view, int year,
                                                           int monthOfYear, int dayOfMonth) {
                                         // Display Selected date in textbox
+
 
                                         if (year < mYear)
                                             view.updateDate(mYear,mMonth,mDay);
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     }
                                 }, mYear, mMonth, mDay);
-                        dpd.getDatePicker().setMinDate(System.currentTimeMillis());
+                        dpd.getDatePicker().setMinDate(1973);
                         dpd.show();
 
                     }else{
