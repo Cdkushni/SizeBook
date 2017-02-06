@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                                 String myFormat = "yyyy-MM-dd";
                                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-                                String value1 = sdf.format(myCalendar.getTime());
+                                //String value1 = sdf.format(myCalendar.getTime());
                             }
                         };
                         final Calendar c = Calendar.getInstance();
@@ -183,8 +183,9 @@ public class MainActivity extends AppCompatActivity {
 
                                         if (dayOfMonth < mDay && year == mYear && monthOfYear == mMonth)
                                             view.updateDate(mYear,mMonth,mDay);
-
-                                        String value = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                                        String strMonth = String.format("%02d", monthOfYear+1);
+                                        String strDay = String.format("%02d", dayOfMonth);
+                                        String value = (year + "-" + strMonth + "-" + strDay);
                                         custrecordsList.get(groupPosition).setRecord(childPosition, value);
                                         List<String> NewData = new ArrayList<>();
                                         for (int i = 0; i < 9; i++) {
